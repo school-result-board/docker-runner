@@ -1,0 +1,45 @@
+version: '3'
+
+services:
+  score-service:
+    image: result-board_score-service
+    build: ../score-service
+    ports:
+    - 9100:80
+    depends_on:
+      - discovery-service
+  student-service:
+    image: result-board_student-service
+    build: ../student-service
+    ports:
+    - 9101:80
+    depends_on:
+      - discovery-service
+  result-service:
+    image: result-board_result-service
+    build: ../result-service
+    depends_on:
+    - score-service
+    - student-service
+    ports:
+    - 9102:80
+  discovery-service:
+    image: result-board_discovery-service
+    build: ../discovery-service
+    ports:
+    - 9103:80
+  front:
+    image: result-board_front
+    build: ../front
+    depends_on:
+    - result-service
+    ports:
+    - 9000:80
+    links:
+    - result-service
+
+# Config for debug
+# environment:
+#   JAVA_OPTS: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005,quiet=y
+# ports:
+# - 5005:5005
